@@ -1,7 +1,7 @@
 import type { IRequest, RouterType } from 'itty-router';
 import type { AddressListStoreKey } from '../../db';
 import type { Environment } from '../../types';
-import { validate } from '@telegram-apps/init-data-node/web';
+import { validate } from '@tma.js/init-data-node/web';
 import { json, Router } from 'itty-router';
 import { Dao } from '../../db';
 import { createTelegramBotAPI, telegramCommands, telegramWebhookHandler, tmaHTML } from '../../telegram';
@@ -138,13 +138,24 @@ function createRouter(env: Environment): RouterType {
     /// Webhook
 
     router.post('/telegram/:token/webhook', async (req: IRequest): Promise<any> => {
+        console.log(`[telegram] webhook.request ${JSON.stringify({
+            url: req.url,
+            method: req.method,
+            tokenMatched: req.params.token === TELEGRAM_TOKEN,
+        })}`);
         if (req.params.token !== TELEGRAM_TOKEN) {
+            console.warn('[telegram] webhook.invalid_token');
             throw new HTTPError(403, 'Invalid token');
         }
         try {
             await telegramWebhookHandler(req, env);
+            console.log('[telegram] webhook.done');
         } catch (e) {
-            console.error(e);
+            const err = e as Error;
+            console.error(`[telegram] webhook.error ${JSON.stringify({
+                message: err.message,
+                stack: err.stack,
+            })}`);
         }
         return { success: true };
     });

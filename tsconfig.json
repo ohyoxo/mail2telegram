@@ -17,6 +17,7 @@
         "outDir": "build",
         "removeComments": true,
         "sourceMap": true,
+        "skipLibCheck": true,
         "esModuleInterop": true
     },
     "exclude": ["**/node_modules", "**/build"]

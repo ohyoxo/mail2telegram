@@ -21,7 +21,9 @@ if (typeof Buffer === 'undefined') {
                 return new Buffer(data);
             }
             if (data instanceof Uint8Array) {
-                return new Buffer(data.buffer);
+                const buffer = new ArrayBuffer(data.byteLength);
+                new Uint8Array(buffer).set(data);
+                return new Buffer(buffer);
             }
             throw new Error(`Unsupported data type: ${typeof data}, encoding: ${encoding}`);
         }
